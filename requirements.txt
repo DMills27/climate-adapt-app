@@ -1,0 +1,4 @@
+flask
+requests
+openepi-client
+uvicorn

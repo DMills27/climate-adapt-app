@@ -5,18 +5,27 @@ pkgs.mkShell {
 
   buildInputs = with pkgs; [
     python3
-    python3Packages.flask
-    # Optional: common Flask-related packages
-    python3Packages.requests
-    python3Packages.pip
-    python3Packages.setuptools
-    python3Packages.wheel
   ];
 
   shellHook = ''
-    export FLASK_APP=app        # Change to your Flask entrypoint if different
+    export FLASK_APP=app  # Adjust to your entrypoint if needed
     export FLASK_ENV=development
-    echo "Flask environment ready. Run 'flask run' to start the server."
+
+    if [ ! -d .venv ]; then
+      echo "Creating virtual environment..."
+      python3 -m venv .venv
+    fi
+
+    source .venv/bin/activate
+
+    if [ -f requirements.txt ]; then
+      echo "Installing dependencies from requirements.txt..."
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    else
+      echo "requirements.txt not found!"
+    fi
+
+    echo "Virtual environment activated. Run 'flask run' to start the server."
   '';
 }
- 
