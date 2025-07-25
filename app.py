@@ -1,27 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template
 
-app = Flask(__name__)
-app.secret_key = 'secret123'  # Needed for flash messages
+def create_app():
+    app = Flask(__name__)
+    return app
 
-@app.route('/', methods=['GET', 'POST'])
-def user_form():
-    if request.method == 'POST':
-        form_data = {
-            'country': request.form.get('country'),
-            'region': request.form.get('region'),
-            'coordinates': request.form.get('coordinates'),
-            'space_type': request.form.get('space_type'),
-            'area': request.form.get('area'),
-            'water': request.form.get('water'),
-            'electricity': request.form.get('electricity'),
-            'traditions': request.form.get('traditions')
-        }
-        print("Received form data:", form_data)
-        flash("Form submitted successfully!", "success")
-        return redirect(url_for('user_form'))
+app = create_app()
 
-    countries = ['United Arab Emirates', 'India', 'Kenya', 'Brazil', 'USA', 'Other']
-    return render_template('form.html', countries=countries)
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True, port=5000, threaded=True)
