@@ -3,17 +3,20 @@
 pkgs.mkShell {
   name = "flask-env";
 
-  buildInputs = [
-    pkgs.python311
-    pkgs.python311Packages.flask
-    pkgs.nodejs_20  # Needed only if you want to build Tailwind locally
-    pkgs.git        # Useful for managing versions or fetching packages
+  buildInputs = with pkgs; [
+    python3
+    python3Packages.flask
+    # Optional: common Flask-related packages
+    python3Packages.requests
+    python3Packages.pip
+    python3Packages.setuptools
+    python3Packages.wheel
   ];
 
   shellHook = ''
-    export FLASK_APP=app.py
+    export FLASK_APP=app        # Change to your Flask entrypoint if different
     export FLASK_ENV=development
-    echo "✅ Flask development environment is ready."
-    echo "▶ Run: flask run"
+    echo "Flask environment ready. Run 'flask run' to start the server."
   '';
 }
+ 
