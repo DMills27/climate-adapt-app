@@ -6,6 +6,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     python3
     git
+    docker
   ];
 
   shellHook = ''

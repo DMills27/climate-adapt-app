@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get Started</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f9f9f9; color:#222; }
+        .wrap { max-width: 900px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h1 { margin-top: 0; font-size: 1.5rem; }
+
+        /* Composer */
+        textarea#composer {
+            width: 100%; min-height: 140px; padding: 0.75rem 1rem;
+            font-size: 1rem; border: 1px solid #ccc; border-radius: 8px;
+        }
+        .btns { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
+        button, a.button-link {
+            appearance: none; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;
+            background: #007bff; color: #fff; text-decoration: none; display:inline-block;
+        }
+        button.secondary { background: #6c757d; }
+        button.ghost { background: #e9ecef; color: #222; }
+        button:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* Thread */
+        .thread { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .post {
+            padding: 1rem; background: #f4f6f8; border-radius: 10px; border: 1px solid #e5e9ef;
+        }
+        .post-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 0.5rem;
+        }
+        .post-title { font-weight: 600; }
+        .post-time { color: #666; font-size: .88rem; }
+        .post-body { white-space: pre-wrap; }
+        .post-actions { display: flex; gap: 0.5rem; margin-top: .5rem; }
+        .post textarea {
+            width: 100%; min-height: 120px; padding: 0.6rem 0.8rem;
+            border: 1px solid #cfd6de; border-radius: 8px; font-size: 1rem; background:#fff;
+        }
+
+        .topnav { margin-bottom: 1rem; }
+        .topnav a { text-decoration:none; color:#0056b3; }
+        .hint { color:#555; font-size: .9rem; margin-top:.25rem; }
+        .empty { color:#667085; font-style: italic; padding: .75rem 0; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topnav"><a href="/">← Back</a></div>
+    <h1>Your project notes</h1>
+    <p class="hint">Post multiple comments in sequence. Each entry shows when it was created. Use <b>Edit</b> on a specific post to modify only that one.</p>
+
+    <!-- Composer -->
+    <textarea id="composer" placeholder="Write your next step, idea, or note here. Then click Post to append it below."></textarea>
+    <div class="btns">
+        <button id="postBtn">Post</button>
+        <a class="button-link secondary" href="/">Home</a>
+    </div>
+
+    <!-- Thread -->
+    <div id="thread" class="thread">
+        <div id="emptyState" class="empty">No posts yet — your first one will appear here.</div>
+    </div>
+</div>
+
+<script>
+    // In-memory data model (oldest -> newest)
+    let posts = []; // [{id, text, createdAtISO, editing:false}]
+    let nextId = 1;
+
+    // DOM
+    const composer = document.getElementById('composer');
+    const postBtn = document.getElementById('postBtn');
+    const thread = document.getElementById('thread');
+    const emptyState = document.getElementById('emptyState');
+
+    function nowISO() { return new Date().toISOString(); }
+
+    function formatTime(iso) {
+        // Localized date+time; tweak options as you like
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, {
+            year: 'numeric', month: 'short', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function addPost(text) {
+        posts.push({
+            id: nextId++,
+            text,
+            createdAtISO: nowISO(),
+            editing: false
+        });
+        render();
+    }
+
+    function startEdit(id) {
+        const p = posts.find(x => x.id === id);
+        if (!p) return;
+        p.editing = true;
+        render();
+        const ta = document.querySelector(`#post-${id} textarea`);
+        if (ta) {
+            ta.focus();
+            const val = ta.value; ta.value = ''; ta.value = val; // move caret to end
+        }
+    }
+
+    function saveEdit(id) {
+        const ta = document.querySelector(`#post-${id} textarea`);
+        if (!ta) return;
+        const p = posts.find(x => x.id === id);
+        if (!p) return;
+        p.text = ta.value.trim();
+        p.editing = false;
+        render();
+    }
+
+    function cancelEdit(id) {
+        const p = posts.find(x => x.id === id);
+        if (!p) return;
+        p.editing = false;
+        render();
+    }
+
+    function render() {
+        // Reset thread area
+        thread.innerHTML = '';
+        if (posts.length === 0) {
+            thread.appendChild(emptyState);
+        }
+
+        // Render all posts in order (oldest at top, newest at bottom)
+        for (const p of posts) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'post';
+            wrapper.id = `post-${p.id}`;
+
+            // Header (title + timestamp)
+            const header = document.createElement('div');
+            header.className = 'post-header';
+
+            const title = document.createElement('div');
+            title.className = 'post-title';
+            title.textContent = `Post #${p.id}`;
+
+            const time = document.createElement('div');
+            time.className = 'post-time';
+            time.textContent = formatTime(p.createdAtISO);
+
+            header.appendChild(title);
+            header.appendChild(time);
+
+            // Body + Actions
+            const body = document.createElement('div');
+            body.className = 'post-body';
+
+            const actions = document.createElement('div');
+            actions.className = 'post-actions';
+
+            if (p.editing) {
+                // Edit mode
+                const ta = document.createElement('textarea');
+                ta.value = p.text;
+                body.appendChild(ta);
+
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = 'Save';
+                saveBtn.addEventListener('click', () => saveEdit(p.id));
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.className = 'ghost';
+                cancelBtn.addEventListener('click', () => cancelEdit(p.id));
+
+                actions.appendChild(saveBtn);
+                actions.appendChild(cancelBtn);
+
+                // Ctrl/Cmd+Enter to save
+                ta.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        saveEdit(p.id);
+                    }
+                });
+            } else {
+                // Read-only mode
+                body.innerHTML = escapeHtml(p.text || '');
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.className = 'secondary';
+                editBtn.addEventListener('click', () => startEdit(p.id));
+                actions.appendChild(editBtn);
+            }
+
+            wrapper.appendChild(header);
+            wrapper.appendChild(body);
+            wrapper.appendChild(actions);
+            thread.appendChild(wrapper);
+        }
+    }
+
+    // Composer: Post multiple comments in succession
+    postBtn.addEventListener('click', () => {
+        const text = composer.value.trim();
+        if (!text) { composer.focus(); return; }
+        addPost(text);
+        composer.value = '';     // clear for the next comment
+        composer.focus();        // keep posting quickly
+    });
+
+    // Ctrl/Cmd+Enter to post from composer
+    composer.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            postBtn.click();
+        }
+    });
+
+    // Initial render
+    render();
+</script>
+</body>
+</html>
