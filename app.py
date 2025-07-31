@@ -1,19 +1,60 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
 from openepi_client import GeoLocation, BoundingBox
 from openepi_client.soil import SoilClient
 from openepi_client.weather import WeatherClient
 import math
+import os
 
 app = Flask(__name__)
 
+
+
+# --- Upload settings ---
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+# --- Pages ---
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
 @app.route("/get-started")
 def get_started():
-    return render_template("get_started.html")
+    files = [f for f in os.listdir(UPLOAD_FOLDER)
+             if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    return render_template("get_started.html", files=files)
 
+
+# --- Upload logic ---
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    if 'file' not in request.files:
+        return 'No file part', 400
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file', 400
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(file_path)
+    return redirect(url_for('get_started'))
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+
+@app.route('/delete/<filename>', methods=['POST'])
+def delete_file(filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    return redirect(url_for('get_started'))
+
+
+# --- Farming logic ---
 def area_to_bounding_box(lat, lon, area_m2):
     lat_deg_per_m = 1 / 111_320
     lon_deg_per_m = 1 / (40075000 * math.cos(math.radians(lat)) / 360)
@@ -27,12 +68,11 @@ def area_to_bounding_box(lat, lon, area_m2):
         max_lon=lon + delta_lon
     )
 
+
 def get_soil_and_weather_data(lat, lon, land_area_m2):
     bbox = area_to_bounding_box(lat, lon, land_area_m2)
     try:
         soil_summary = SoilClient.get_soil_type_summary(bounding_box=bbox)
-        print("soil summary: ", soil_summary)
-
         summaries = getattr(soil_summary.properties, 'summaries', [])
         if summaries:
             dominant_soil = summaries[0].soil_type.root
@@ -64,20 +104,18 @@ def get_soil_and_weather_data(lat, lon, land_area_m2):
         "land_area_m2": land_area_m2
     }
 
-# print("get_soil_and_weather_data: ", get_soil_and_weather_data(59.0929, 28.9029, 200))
 
 def suggest_farming_method(inputs):
     soil = inputs["soil_type"]
-    area = inputs["land_area_m2"]
+    land = inputs["land_area_m2"]
     temp = inputs["temperature"]
-    rainfall = inputs["rainfall"]
+    rain = inputs["rainfall"]
     humidity = inputs["humidity"]
 
     if soil == "No information":
-        # Fallback to general methods not soil-dependent
-        if area < 50:
+        if land < 50:
             return "Vertical Farming"
-        elif area < 200:
+        elif land < 200:
             return "Greenhouses (CEA)"
         else:
             return "Regenerative Ag"
@@ -91,11 +129,10 @@ def suggest_farming_method(inputs):
         return 'Vertical Farming'
     if soil in ['Andosols', 'Ferralsols'] and rain > 40 and land > 1000:
         return 'Regenerative agriculture'
-    if soil == 'No information':
-        return 'Greenhouses (CEA)'
     if soil in ['Phaeozems', 'Cambisols', 'Luvisols'] and land > 3000:
         return 'Silvopasture'
     return 'Aeroponics'
+
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -113,6 +150,7 @@ def recommend():
         return jsonify({"recommendation": recommendation})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=5000, threaded=True)

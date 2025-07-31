@@ -11,21 +11,55 @@
         .wrap { max-width: 900px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         h1 { margin-top: 0; font-size: 1.5rem; }
 
-        /* Composer */
         textarea#composer {
             width: 100%; min-height: 140px; padding: 0.75rem 1rem;
             font-size: 1rem; border: 1px solid #ccc; border-radius: 8px;
         }
-        .btns { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
-        button, a.button-link {
-            appearance: none; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;
-            background: #007bff; color: #fff; text-decoration: none; display:inline-block;
+
+        .btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
         }
+
+        button, a.button-link {
+            appearance: none;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+        }
+
         button.secondary { background: #6c757d; }
-        button.ghost { background: #e9ecef; color: #222; }
+        button.ghost, .file-upload-label {
+            background: #e9ecef;
+            color: #222;
+        }
+
         button:disabled { opacity: .6; cursor: not-allowed; }
 
-        /* Thread */
+        .upload-preview {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
         .thread { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
         .post {
             padding: 1rem; background: #f4f6f8; border-radius: 10px; border: 1px solid #e5e9ef;
@@ -46,20 +80,59 @@
         .topnav a { text-decoration:none; color:#0056b3; }
         .hint { color:#555; font-size: .9rem; margin-top:.25rem; }
         .empty { color:#667085; font-style: italic; padding: .75rem 0; }
+
+        ul { padding-left: 1rem; }
+        li { margin-bottom: 1rem; }
+        .uploaded-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .upload-delete-form {
+            display: inline-block;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 <div class="wrap">
     <div class="topnav"><a href="/">← Back</a></div>
     <h1>Your project notes</h1>
-    <p class="hint">Post multiple comments in sequence. Each entry shows when it was created. Use <b>Edit</b> on a specific post to modify only that one.</p>
+    <p class="hint">Post multiple comments in sequence. Each entry shows when it was created.</p>
 
     <!-- Composer -->
     <textarea id="composer" placeholder="Write your next step, idea, or note here. Then click Post to append it below."></textarea>
-    <div class="btns">
-        <button id="postBtn">Post</button>
-        <a class="button-link secondary" href="/">Home</a>
-    </div>
+
+    <!-- Unified Button Row -->
+    <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+        <div class="btns">
+            <button id="postBtn" type="button">Post</button>
+            <label for="fileInput" class="file-upload-label">Choose File</label>
+            <input type="file" name="file" id="fileInput" required style="display: none;">
+            <button type="submit">Upload Image</button>
+        </div>
+        <p class="upload-preview" id="fileName">No file selected</p>
+    </form>
+
+    <!-- Uploaded Images -->
+    {% if files %}
+        <h3>Uploaded Images</h3>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <img class="uploaded-img" src="{{ url_for('uploaded_file', filename=file) }}">
+                    <form class="upload-delete-form" action="{{ url_for('delete_file', filename=file) }}" method="post">
+                        <button class="delete-btn" type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     <!-- Thread -->
     <div id="thread" class="thread">
@@ -68,20 +141,24 @@
 </div>
 
 <script>
-    // In-memory data model (oldest -> newest)
-    let posts = []; // [{id, text, createdAtISO, editing:false}]
+    let posts = [];
     let nextId = 1;
 
-    // DOM
     const composer = document.getElementById('composer');
     const postBtn = document.getElementById('postBtn');
     const thread = document.getElementById('thread');
     const emptyState = document.getElementById('emptyState');
 
-    function nowISO() { return new Date().toISOString(); }
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const fileName = event.target.files.length ? event.target.files[0].name : 'No file selected';
+        document.getElementById('fileName').textContent = fileName;
+    });
+
+    function nowISO() {
+        return new Date().toISOString();
+    }
 
     function formatTime(iso) {
-        // Localized date+time; tweak options as you like
         const d = new Date(iso);
         return d.toLocaleString(undefined, {
             year: 'numeric', month: 'short', day: '2-digit',
@@ -90,19 +167,13 @@
     }
 
     function escapeHtml(str) {
-        return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+        return String(str).replace(/&/g, "&amp;")
+                          .replace(/</g, "&lt;")
+                          .replace(/>/g, "&gt;");
     }
 
     function addPost(text) {
-        posts.push({
-            id: nextId++,
-            text,
-            createdAtISO: nowISO(),
-            editing: false
-        });
+        posts.push({ id: nextId++, text, createdAtISO: nowISO(), editing: false });
         render();
     }
 
@@ -114,7 +185,9 @@
         const ta = document.querySelector(`#post-${id} textarea`);
         if (ta) {
             ta.focus();
-            const val = ta.value; ta.value = ''; ta.value = val; // move caret to end
+            const val = ta.value;
+            ta.value = '';
+            ta.value = val;
         }
     }
 
@@ -136,19 +209,14 @@
     }
 
     function render() {
-        // Reset thread area
         thread.innerHTML = '';
-        if (posts.length === 0) {
-            thread.appendChild(emptyState);
-        }
+        if (posts.length === 0) thread.appendChild(emptyState);
 
-        // Render all posts in order (oldest at top, newest at bottom)
         for (const p of posts) {
             const wrapper = document.createElement('div');
             wrapper.className = 'post';
             wrapper.id = `post-${p.id}`;
 
-            // Header (title + timestamp)
             const header = document.createElement('div');
             header.className = 'post-header';
 
@@ -163,7 +231,6 @@
             header.appendChild(title);
             header.appendChild(time);
 
-            // Body + Actions
             const body = document.createElement('div');
             body.className = 'post-body';
 
@@ -171,7 +238,6 @@
             actions.className = 'post-actions';
 
             if (p.editing) {
-                // Edit mode
                 const ta = document.createElement('textarea');
                 ta.value = p.text;
                 body.appendChild(ta);
@@ -188,14 +254,10 @@
                 actions.appendChild(saveBtn);
                 actions.appendChild(cancelBtn);
 
-                // Ctrl/Cmd+Enter to save
                 ta.addEventListener('keydown', (e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                        saveEdit(p.id);
-                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEdit(p.id);
                 });
             } else {
-                // Read-only mode
                 body.innerHTML = escapeHtml(p.text || '');
                 const editBtn = document.createElement('button');
                 editBtn.textContent = 'Edit';
@@ -211,23 +273,21 @@
         }
     }
 
-    // Composer: Post multiple comments in succession
     postBtn.addEventListener('click', () => {
         const text = composer.value.trim();
-        if (!text) { composer.focus(); return; }
-        addPost(text);
-        composer.value = '';     // clear for the next comment
-        composer.focus();        // keep posting quickly
-    });
-
-    // Ctrl/Cmd+Enter to post from composer
-    composer.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            postBtn.click();
+        if (!text) {
+            composer.focus();
+            return;
         }
+        addPost(text);
+        composer.value = '';
+        composer.focus();
     });
 
-    // Initial render
+    composer.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') postBtn.click();
+    });
+
     render();
 </script>
 </body>
