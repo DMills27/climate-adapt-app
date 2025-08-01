@@ -181,6 +181,27 @@
         a.cta:hover {
             text-decoration: underline;
         }
+
+        .marker {
+            background-color: #3FB1CE;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 3px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+
+        .draggable-marker {
+            background-color: red;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            cursor: grab;
+        }
+
     </style>
 </head>
 
@@ -252,7 +273,7 @@
                         <input type="text" id="areaInput" placeholder="e.g. 500">
                     </div>
                     <div class="form-group">
-                        <button onclick="submitEnvironmentalData()">Recommend Farming Method</button>
+                        <button id="recommendBtn" onclick="submitEnvironmentalData()">Recommend Farming Method</button>
                     </div>
                     <div class="form-group">
                         <label>Recommended Method:</label>
@@ -264,119 +285,257 @@
         </div>
     </div>
     <script>
-    const map = new maplibregl.Map({
-        container: 'map',
-        style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-        center: [0, 0],
-        zoom: 1,
-        maplibreLogo: true
-    });
+        const farmerFeatures = [
+            {
+                coordinates: [-1.55, 12.36],
+                description: '<strong>Amadou’s Farm</strong><p>Growing millet and sorghum since 2018. Uses water-conserving drip irrigation.</p>'
+            },
+            {
+                coordinates: [36.82, -1.29],
+                description: '<strong>Mary’s Cooperative</strong><p>Operates a sustainable maize and legume collective. Open to visitors and volunteers.</p>'
+            },
+            {
+                coordinates: [77.59, 12.97],
+                description: '<strong>Kiran’s Vertical Farm</strong><p>Urban rooftop growing leafy greens with aquaponics. Open-source tech shared with local schools.</p>'
+            }
+        ];
 
-    // Initialize draggable marker
-    const marker = new maplibregl.Marker({ draggable: true })
-        .setLngLat([0, 0])
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+            center: [0, 0],
+            zoom: 1,
+            maplibreLogo: true
+        });
+
+        // Static marker coordinates (you can customize these)
+        const staticPoints = [
+        [28.904, 59.093], // Static Point 1
+        [28.901, 59.091]  // Static Point 2
+        ];
+
+        // Add static markers to the map
+        staticPoints.forEach(coord => {
+        new maplibregl.Marker({ color: '#00a' })
+            .setLngLat(coord)
+            .addTo(map);
+        });
+
+
+        map.on('load', function () {
+            map.addSource('animated-line', {
+                type: 'geojson',
+                data: {
+                type: 'FeatureCollection',
+                features: []
+                }
+            });
+
+        map.addLayer({
+            id: 'animated-line-layer',
+            type: 'line',
+            source: 'animated-line',
+            paint: {
+                'line-color': '#ff6600',
+                'line-width': 4,
+                'line-dasharray': [2, 4]
+                }
+            });
+            });
+
+
+        // Add static farmer markers
+        farmerFeatures.forEach(farm => {
+            const el = document.createElement('div');
+            el.className = 'marker';
+
+            new maplibregl.Marker(el)
+                .setLngLat(farm.coordinates)
+                .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(farm.description))
+                .addTo(map);
+        });
+
+        // Draggable marker for user selection
+        // const marker = new maplibregl.Marker({ draggable: true })
+        //     .setLngLat([0, 0])
+        //     .addTo(map);
+
+        const markerEl = document.createElement('div');
+        markerEl.className = 'marker draggable-marker';
+
+        // Add the popup
+        const youAreHerePopup = new maplibregl.Popup({
+            offset: 25,
+            closeButton: false,
+            closeOnClick: false
+        }).setText('You are here');
+
+        const marker = new maplibregl.Marker({
+            element: markerEl,
+            draggable: true
+        })
+        .setLngLat([0, 20])
+        .setPopup(youAreHerePopup)
         .addTo(map);
 
-    function updateInputsFromCoords(lat, lon) {
-        document.getElementById("latInput").value = lat.toFixed(6);
-        document.getElementById("lonInput").value = lon.toFixed(6);
-    }
+        // Show popup immediately
+        youAreHerePopup.addTo(map);
 
-    function setMarkerAndFly(lat, lon, zoom = 6) {
-        const center = [lon, lat];
-        map.flyTo({ center, zoom });
-        marker.setLngLat(center);
-        updateInputsFromCoords(lat, lon);
-    }
 
-    map.on('click', function (e) {
-        const lat = e.lngLat.lat;
-        const lon = e.lngLat.lng;
-        setMarkerAndFly(lat, lon, 8);
-    });
+        marker.getElement().title = "Drag me to your location";
 
-    marker.on('dragend', function () {
-        const lngLat = marker.getLngLat();
-        updateInputsFromCoords(lngLat.lat, lngLat.lng);
-    });
-
-    function flyToCountry() {
-        const country = document.getElementById("countryInput").value;
-        if (!country) {
-            alert("Please enter a country name.");
-            return;
+        function updateInputsFromCoords(lat, lon) {
+            document.getElementById("latInput").value = lat.toFixed(6);
+            document.getElementById("lonInput").value = lon.toFixed(6);
         }
 
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(country)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.length === 0) {
-                    alert("Country not found.");
-                    return;
-                }
-                const lat = parseFloat(data[0].lat);
-                const lon = parseFloat(data[0].lon);
-                setMarkerAndFly(lat, lon, 6);
+        function setMarkerAndFly(lat, lon, zoom = 6) {
+            const center = [lon, lat];
+            map.flyTo({ center, zoom });
+            marker.setLngLat(center);
+            updateInputsFromCoords(lat, lon);
+        }
+
+        map.on('click', function (e) {
+            const lat = e.lngLat.lat;
+            const lon = e.lngLat.lng;
+            marker.setLngLat([lon, lat]);
+            updateInputsFromCoords(lat, lon);
+        });
+
+        marker.on('dragend', function () {
+            const lngLat = marker.getLngLat();
+            updateInputsFromCoords(lngLat.lat, lngLat.lng);
+        });
+
+        function flyToCountry() {
+            const country = document.getElementById("countryInput").value;
+            if (!country) {
+                alert("Please enter a country name.");
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(country)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert("Country not found.");
+                        return;
+                    }
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    setMarkerAndFly(lat, lon, 6);
+                })
+                .catch(error => {
+                    console.error("Error fetching country coordinates:", error);
+                    alert("Failed to locate country.");
+                });
+        }
+
+        function goToLocation() {
+            const lat = parseFloat(document.getElementById("latInput").value);
+            const lon = parseFloat(document.getElementById("lonInput").value);
+            if (!isNaN(lat) && !isNaN(lon)) {
+                setMarkerAndFly(lat, lon, 8);
+            } else {
+                alert("Please enter valid latitude and longitude.");
+            }
+        }
+
+        function submitEnvironmentalData() {
+            const lat = parseFloat(document.getElementById("latInput").value);
+            const lon = parseFloat(document.getElementById("lonInput").value);
+            const area = parseFloat(document.getElementById("areaInput").value);
+
+            if (isNaN(lat) || isNaN(lon) || isNaN(area)) {
+                alert("Please enter all values correctly.");
+                return;
+            }
+
+            fetch("/recommend", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ lat, lon, area })
             })
-            .catch(error => {
-                console.error("Error fetching country coordinates:", error);
-                alert("Failed to locate country.");
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("recommendationResult").innerText = data.recommendation;
+                    document.getElementById("startLink").innerHTML =
+                        '<a class="cta" href="/get-started">Let\'s get you started →</a>';
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Something went wrong.");
+                });
+        }
+
+        function closeModal() {
+            document.getElementById("introModal").style.display = "none";
+            localStorage.setItem("intro_shown", "true");
+        }
+
+        window.onload = function () {
+            if (!localStorage.getItem("intro_shown")) {
+                document.getElementById("introModal").style.display = "flex";
+            }
+        };
+
+        function toggleLocationMethod() {
+            const useCountry = document.getElementById("useCountry").checked;
+            document.getElementById("countryInputGroup").style.display = useCountry ? "block" : "none";
+            document.getElementById("coordInputGroup").style.display = useCountry ? "none" : "block";
+        }
+
+        document.getElementById('recommendBtn').addEventListener('click', () => {
+        if (!marker) return;
+
+        const markerLngLat = marker.getLngLat();
+
+        // Create full path: draggable marker -> static 1 -> static 2
+        const lineCoords = [
+            [markerLngLat.lng, markerLngLat.lat],
+            ...staticPoints
+        ];
+
+        // Fit map bounds to include all line points
+        const bounds = new maplibregl.LngLatBounds();
+        lineCoords.forEach(coord => bounds.extend(coord));
+
+        // Smooth zoom out to fit the trajectory
+        map.fitBounds(bounds, {
+            padding: 60,
+            duration: 1500,
+            easing: t => t
+        });
+
+        // Set up for animation
+        const lineFeature = {
+            type: 'Feature',
+            geometry: {
+            type: 'LineString',
+            coordinates: []
+            }
+        };
+
+        let i = 0;
+        const animationSpeed = 30; // ms between line points
+
+        function animateLine() {
+            if (i < lineCoords.length) {
+            lineFeature.geometry.coordinates.push(lineCoords[i]);
+            map.getSource('animated-line').setData({
+                type: 'FeatureCollection',
+                features: [lineFeature]
             });
-    }
-
-    function goToLocation() {
-        const lat = parseFloat(document.getElementById("latInput").value);
-        const lon = parseFloat(document.getElementById("lonInput").value);
-        if (!isNaN(lat) && !isNaN(lon)) {
-            setMarkerAndFly(lat, lon, 8);
-        } else {
-            alert("Please enter valid latitude and longitude.");
-        }
-    }
-
-    function submitEnvironmentalData() {
-        const lat = parseFloat(document.getElementById("latInput").value);
-        const lon = parseFloat(document.getElementById("lonInput").value);
-        const area = parseFloat(document.getElementById("areaInput").value);
-
-        if (isNaN(lat) || isNaN(lon) || isNaN(area)) {
-            alert("Please enter all values correctly.");
-            return;
+            i++;
+            setTimeout(animateLine, animationSpeed);
+            }
         }
 
-        fetch("/recommend", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lat, lon, area })
-        })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("recommendationResult").innerText = data.recommendation;
-                document.getElementById("startLink").innerHTML =
-                    '<a class="cta" href="/get-started">Let\'s get you started →</a>';
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Something went wrong.");
-            });
-    }
+        animateLine();
+        });
 
-    function closeModal() {
-        document.getElementById("introModal").style.display = "none";
-        localStorage.setItem("intro_shown", "true");
-    }
 
-    window.onload = function () {
-        if (!localStorage.getItem("intro_shown")) {
-            document.getElementById("introModal").style.display = "flex";
-        }
-    };
-
-    function toggleLocationMethod() {
-        const useCountry = document.getElementById("useCountry").checked;
-        document.getElementById("countryInputGroup").style.display = useCountry ? "block" : "none";
-        document.getElementById("coordInputGroup").style.display = useCountry ? "none" : "block";
-    }
     </script>
 </body>
 </html>
