@@ -6,15 +6,9 @@
 - Safita Ardhia 
 - Priyanshu
 
-Here’s a clearer, better organized, and typo-free version of your setup and installation instructions. It improves readability, corrects grammar, and separates concepts logically.
-
----
-
 # Installation Steps
 
 This web application is built with Flask. You can run it using either **Nix** (recommended) or a standard Python environment.
-
----
 
 ## Option 1: Build and Run with Nix (Recommended)
 
@@ -37,8 +31,6 @@ The simplest and cleanest way to run the app is using [Nix](https://nixos.org/do
 The app will be available at **`http://localhost:5000`**.
 
 > Behind the scenes, `nix-shell` creates a **temporary shell environment** using the `default.nix` file. This ensures all dependencies are installed without modifying your global system, making it ideal for reproducible development.
-
----
 
 ## Option 2: Build and Run Without Nix (Using Python Virtual Environment)
 
