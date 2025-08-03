@@ -2,12 +2,11 @@ from flask import Flask, render_template, request, jsonify, send_from_directory,
 from openepi_client import GeoLocation, BoundingBox
 from openepi_client.soil import SoilClient
 from openepi_client.weather import WeatherClient
+from openepi_client.crop_health import CropHealthClient  # Added
 import math
 import os
 
 app = Flask(__name__)
-
-
 
 # --- Upload settings ---
 UPLOAD_FOLDER = 'uploads'
@@ -25,20 +24,78 @@ def index():
 def get_started():
     files = [f for f in os.listdir(UPLOAD_FOLDER)
              if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-    return render_template("get_started.html", files=files)
+    # Get health status for each image
+    file_health = {}
+    for f in files:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f)
+        try:
+            with open(file_path, "rb") as img_file:
+                image_data = img_file.read()
+                health_response = CropHealthClient.get_binary_prediction(image_data)
+            # Parse response
+            scores = parse_health_response(health_response)
+            disease_risk = assess_disease_risk(scores)
+            file_health[f] = disease_risk
+        except Exception as e:
+            print(f"Error analyzing {f}: {e}")
+            file_health[f] = {"status": "Error", "details": "Could not analyze image."}
+
+    return render_template("get_started.html", files=files, file_health=file_health)
 
 
 # --- Upload logic ---
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if 'file' not in request.files:
-        return 'No file part', 400
+        return jsonify({"error": "No file part"}), 400
     file = request.files['file']
     if file.filename == '':
-        return 'No selected file', 400
+        return jsonify({"error": "No selected file"}), 400
+
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(file_path)
-    return redirect(url_for('get_started'))
+    try:
+        file.save(file_path)
+        print(f"✅ Saved: {file_path}")
+    except Exception as e:
+        return jsonify({"error": "Save failed", "details": str(e)}), 500
+
+    try:
+        with open(file_path, "rb") as f:
+            image_data = f.read()
+        if len(image_data) == 0:
+            return jsonify({"error": "Empty file"}), 400
+    except Exception as e:
+        return jsonify({"error": "Read failed", "details": str(e)}), 500
+
+    try:
+        # Call OpenEPI
+        health_response = CropHealthClient.get_binary_prediction(image_data)
+
+        # Parse safely
+        try:
+            scores = parse_health_response(health_response)
+            disease_risk = assess_disease_risk(scores)
+        except Exception as e:
+            print(f"Parse error: {e}")
+            disease_risk = {
+                "status": "Error",
+                "details": f"Failed to interpret results: {str(e)}"
+            }
+
+        return jsonify({
+            "filename": file.filename,
+            "health": disease_risk
+        })
+
+    except Exception as e:
+        print(f"🚨 API call failed: {e}")
+        return jsonify({
+            "filename": file.filename,
+            "health": {
+                "status": "Error",
+                "details": "Prediction failed (server error or unsupported image). Please try again later."
+            }
+        })
 
 
 @app.route('/uploads/<filename>')
@@ -52,6 +109,76 @@ def delete_file(filename):
     if os.path.exists(file_path):
         os.remove(file_path)
     return redirect(url_for('get_started'))
+
+
+# --- Crop Health Analysis ---
+def parse_health_response(response):
+    """
+    Safely parse the response from CropHealthClient.get_binary_prediction().
+    It may be a BinaryPredictionResponse object or an error dict.
+    """
+    # Case 1: It's an object with .model_dump() (Pydantic v2)
+    if hasattr(response, 'model_dump'):
+        data = response.model_dump()
+        # Look for HLT, NOT_HLT, or other fields
+        return {k: float(v) for k, v in data.items() if isinstance(v, (int, float))}
+
+    # Case 2: It's a dictionary (e.g., error response)
+    if isinstance(response, dict):
+        if 'detail' in response:
+            raise ValueError(f"API Error: {response['detail']}")
+        return {k: float(v) for k, v in response.items() if isinstance(v, (int, float))}
+
+    # Case 3: It's a string (fallback)
+    if isinstance(response, str):
+        scores = {}
+        for item in response.strip().split():
+            if '=' in item:
+                key, value = item.split('=', 1)
+                try:
+                    scores[key] = float(value)
+                except ValueError:
+                    pass
+        return scores
+
+    raise ValueError(f"Unsupported response type: {type(response)}")
+
+
+def assess_disease_risk(scores: dict):
+    """
+    Determine if the crop is healthy based on thresholds.
+    High scores indicate disease presence.
+    We'll flag if any disease score exceeds a threshold (e.g., > 1.0).
+    """
+    # Threshold for "likely diseased"
+    THRESHOLD = 1.0
+
+    # Extract crop type from keys (e.g., cassava, maize, etc.)
+    crops = set()
+    for key in scores:
+        parts = key.split('_')
+        if len(parts) >= 2:
+            crop = parts[-1].lower()
+            crops.add(crop.capitalize())
+
+    high_risk = {k: v for k, v in scores.items() if v > THRESHOLD}
+
+    if high_risk:
+        top_issue = max(high_risk, key=high_risk.get)
+        return {
+            "status": "Unhealthy",
+            "crop": ", ".join(crops),
+            "details": f"Possible issue: {top_issue.replace('_', ' ').title()} (Score: {high_risk[top_issue]:.2f}). Consider taking action.",
+            "score": high_risk[top_issue]
+        }
+    else:
+        crop_list = ", ".join(crops) if crops else "Unknown"
+        return {
+            "status": "Healthy",
+            "crop": crop_list,
+            "details": "No major diseases detected. Crop appears healthy.",
+            "score": 0.0
+        }
 
 
 # --- Farming logic ---

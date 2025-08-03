@@ -6,96 +6,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f9f9f9; color:#222; }
-        .wrap { max-width: 900px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h1 { margin-top: 0; font-size: 1.5rem; }
-
-        textarea#composer {
-            width: 100%; min-height: 140px; padding: 0.75rem 1rem;
-            font-size: 1rem; border: 1px solid #ccc; border-radius: 8px;
+        .wrap {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
         }
-
-        .btns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 0.75rem;
+        .topnav {
+            margin-bottom: 20px;
         }
-
-        button, a.button-link {
-            appearance: none;
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            background: #007bff;
-            color: #fff;
+        .topnav a {
             text-decoration: none;
+            color: #333;
+            font-weight: 600;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        p.hint {
+            color: #555;
+            font-size: 0.9em;
+        }
+        textarea#composer {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            resize: vertical;
+            height: 100px;
+            box-sizing: border-box;
+        }
+        .btns {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button#postBtn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button#postBtn:hover {
+            background-color: #0056b3;
+        }
+        .upload-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
             display: inline-block;
         }
-
-        button.secondary { background: #6c757d; }
-        button.ghost, .file-upload-label {
-            background: #e9ecef;
-            color: #222;
+        .upload-btn:hover {
+            background-color: #218838;
         }
-
-        button:disabled { opacity: .6; cursor: not-allowed; }
-
+        input[type="file"] {
+            display: none;
+        }
         .upload-preview {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
+            margin: 10px 0 0;
+            font-size: 0.9em;
             color: #555;
         }
-
-        .file-upload-label {
-            cursor: pointer;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-block;
-        }
-
-        .thread { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
-        .post {
-            padding: 1rem; background: #f4f6f8; border-radius: 10px; border: 1px solid #e5e9ef;
-        }
-        .post-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 0.5rem;
-        }
-        .post-title { font-weight: 600; }
-        .post-time { color: #666; font-size: .88rem; }
-        .post-body { white-space: pre-wrap; }
-        .post-actions { display: flex; gap: 0.5rem; margin-top: .5rem; }
-        .post textarea {
-            width: 100%; min-height: 120px; padding: 0.6rem 0.8rem;
-            border: 1px solid #cfd6de; border-radius: 8px; font-size: 1rem; background:#fff;
-        }
-
-        .topnav { margin-bottom: 1rem; }
-        .topnav a { text-decoration:none; color:#0056b3; }
-        .hint { color:#555; font-size: .9rem; margin-top:.25rem; }
-        .empty { color:#667085; font-style: italic; padding: .75rem 0; }
-
-        ul { padding-left: 1rem; }
-        li { margin-bottom: 1rem; }
         .uploaded-img {
-            max-width: 100%;
-            height: auto;
+            max-width: 150px;
+            max-height: 150px;
             border-radius: 8px;
-            display: block;
-            margin-bottom: 0.5rem;
+            margin-right: 10px;
         }
-        .upload-delete-form {
-            display: inline-block;
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .file-info {
+            flex: 1;
+        }
+        .file-info p {
+            margin: 4px 0;
+        }
+        .health-healthy {
+            color: green;
+            font-weight: 500;
+        }
+        .health-unhealthy {
+            color: red;
+            font-weight: 500;
+        }
+        .health-error {
+            color: orange;
         }
         .delete-btn {
-            background: #dc3545;
-            color: #fff;
+            background: none;
+            border: none;
+            color: #d9534f;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+        .thread {
+            margin-top: 30px;
+        }
+        .post {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .post-title {
+            font-weight: 600;
+        }
+        .post-body {
+            margin-bottom: 10px;
+        }
+        .post-body textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+        .post-actions button {
+            margin-right: 8px;
+            padding: 6px 10px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .post-actions button.ghost {
+            background-color: transparent;
+        }
+        .post-actions button.secondary {
+            background-color: #e9e9e9;
+        }
+        #emptyState {
+            color: #888;
+            font-style: italic;
         }
     </style>
 </head>
@@ -108,30 +179,37 @@
     <!-- Composer -->
     <textarea id="composer" placeholder="Write your next step, idea, or note here. Then click Post to append it below."></textarea>
 
-    <!-- Unified Button Row -->
-    <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-        <div class="btns">
-            <button id="postBtn" type="button">Post</button>
-            <label for="fileInput" class="file-upload-label">Choose File</label>
-            <input type="file" name="file" id="fileInput" required style="display: none;">
-            <button type="submit">Upload Image</button>
-        </div>
+    <!-- Unified Upload Section -->
+    <div class="btns">
+        <button id="postBtn" type="button">Post</button>
+        <label for="fileInput" class="upload-btn">📤 Upload Image</label>
+        <input type="file" name="file" id="fileInput" accept="image/*" style="display: none;">
         <p class="upload-preview" id="fileName">No file selected</p>
-    </form>
+    </div>
 
     <!-- Uploaded Images -->
     {% if files %}
         <h3>Uploaded Images</h3>
-        <ul>
-            {% for file in files %}
-                <li>
-                    <img class="uploaded-img" src="{{ url_for('uploaded_file', filename=file) }}">
-                    <form class="upload-delete-form" action="{{ url_for('delete_file', filename=file) }}" method="post">
+        {% for file in files %}
+            <div class="file-item">
+                <img class="uploaded-img" src="{{ url_for('uploaded_file', filename=file) }}" alt="Uploaded image">
+                <div class="file-info">
+                    <p><strong>{{ file }}</strong></p>
+                    {% set health = file_health[file] %}
+                    <p class="
+                        {% if health.status == 'Healthy' %}health-healthy
+                        {% elif health.status == 'Unhealthy' %}health-unhealthy
+                        {% else %}health-error{% endif %}
+                    ">
+                        🌿 Status: <strong>{{ health.status }}</strong><br>
+                        <small>{{ health.details }}</small>
+                    </p>
+                    <form class="upload-delete-form" action="{{ url_for('delete_file', filename=file) }}" method="post" style="display:inline;">
                         <button class="delete-btn" type="submit">Delete</button>
                     </form>
-                </li>
-            {% endfor %}
-        </ul>
+                </div>
+            </div>
+        {% endfor %}
     {% endif %}
 
     <!-- Thread -->
@@ -141,6 +219,41 @@
 </div>
 
 <script>
+    // File input change handler
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        if (file) {
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            uploadFile(file);
+        } else {
+            fileNameDisplay.textContent = 'No file selected';
+        }
+    });
+
+    // Upload file via fetch
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(`✅ "${data.filename}" uploaded!\nStatus: ${data.health.status}\n${data.health.details}`);
+            location.reload(); // Refresh to show updated health info
+        })
+        .catch(err => {
+            console.error('Upload failed:', err);
+            alert('❌ Upload failed. Please try again.');
+        });
+    }
+
+    // Note Management (unchanged from original)
     let posts = [];
     let nextId = 1;
 
@@ -148,11 +261,6 @@
     const postBtn = document.getElementById('postBtn');
     const thread = document.getElementById('thread');
     const emptyState = document.getElementById('emptyState');
-
-    document.getElementById('fileInput').addEventListener('change', function(event) {
-        const fileName = event.target.files.length ? event.target.files[0].name : 'No file selected';
-        document.getElementById('fileName').textContent = fileName;
-    });
 
     function nowISO() {
         return new Date().toISOString();
@@ -167,9 +275,10 @@
     }
 
     function escapeHtml(str) {
-        return String(str).replace(/&/g, "&amp;")
-                          .replace(/</g, "&lt;")
-                          .replace(/>/g, "&gt;");
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "<")
+            .replace(/>/g, ">");
     }
 
     function addPost(text) {
@@ -183,12 +292,7 @@
         p.editing = true;
         render();
         const ta = document.querySelector(`#post-${id} textarea`);
-        if (ta) {
-            ta.focus();
-            const val = ta.value;
-            ta.value = '';
-            ta.value = val;
-        }
+        if (ta) ta.focus();
     }
 
     function saveEdit(id) {
