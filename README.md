@@ -55,19 +55,17 @@ We propose a web application, written in [Flask](https://flask.palletsprojects.c
         1) If one or more users has already implemented a project with similar constraints, it notifies the user of that by drawing an animated dashed line or lines to their location where that user implemented that solution and then a pop-up over their location appears prompting the user to view it; 
         2) The recommended sustainable farming method appears under the button and under that is a clickable hyperlink with text that says "Let's get you started". Clicking that will take you to the page where you'll document your progress detailed further in the section below.
         * **Note**: The algorithm recommends a sustainable farming method by using the user's location to retrieve soil type and weather data via OpenEPI's [Soil API](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#soil) and  [Weather API](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#weather). It converts the given coordinates and land area into a bounding box, then queries the APIs to get the dominant soil type and current weather (e.g., temperature, rainfall). These inputs, along with land size, are evaluated using simple heuristics to determine the best method, such as Aquaponics, Agroforestry, or Vertical Farming, as shown in the table below. If soil or weather data is missing, the algorithm defaults to using land area alone.
+        | Method            | Climate Benefit                          |
+        | ----------------- | ---------------------------------------- |
+        | Aeroponics        | Minimal water use                        |
+        | Agroforestry      | Carbon capture, soil and water retention |
+        | Regenerative Agriculture   | Soil health, carbon sequestration        |
+        | Aquaponics        | Closed-loop sustainability               |
+        | Vertical Farming  | Urban, low-land use, weather-proof       |
+        | Dryland Farming   | Thrives in arid conditions               |
+        | Silvopasture      | Climate-smart livestock integration      |
+        | Greenhouses  | Control over climate variables           |
 
-<div align="center">
-| Method            | Climate Benefit                          |
-| ----------------- | ---------------------------------------- |
-| Aeroponics        | Minimal water use                        |
-| Agroforestry      | Carbon capture, soil and water retention |
-| Regenerative Agriculture   | Soil health, carbon sequestration        |
-| Aquaponics        | Closed-loop sustainability               |
-| Vertical Farming  | Urban, low-land use, weather-proof       |
-| Dryland Farming   | Thrives in arid conditions               |
-| Silvopasture      | Climate-smart livestock integration      |
-| Greenhouses  | Control over climate variables           |
-</div>
 * Step 2: 
     * After clicking the "Let's get you started" link, you enter the "field notes" section of the application. The top of the page contains a preamble about how to get started with the farming method that was recommended, and the type of materials that would be available to needed to actualise this project. Under that is a text box where one can create posts about the varous progress of your project in different time intervals. In addition to creating posts one can upload images of the crops and get feedback on the health of the crops at various stages which uses the OpenEPI [Crop Health](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#crop-health) API under the hood.
     * The upper 
