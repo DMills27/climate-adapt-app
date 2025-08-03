@@ -4,7 +4,7 @@
 - Dominic Mills-Howell (Team Lead)
 - Shubham Singh
 - Safita Ardhia 
-- Priyanshu
+- Priyanshu Tomar
 
 # Installation Steps
 
@@ -158,6 +158,13 @@ If either soil or weather data is unavailable, the algorithm falls back to using
 
 ## Further refinements/Future implementations
 
+Going forward, we would like to refine certain aspects of the current implementation of the application. They are as follows:
+
+* Creating a more robust algorithm for determining the best suited sustainable farming method. The current heuristics used are broad and lack the appropriate level of rigour to adequately determine the best soil type for the widest possible ranges of possible scenarios. Some ways to better refine would be to reify the methods from this [paper]().
+* Increase the range of crops and their associated diesease with pattern matching and machine learning models. The current crop health API is limited by a number of crops, namely, 
+* 
+ 
+
 ## Who are your users and what is their impact?
 Our users are individuals and communities who are motivated to implement sustainable farming practices, but face barriers due to limited resources, local constraints, or lack of tailored guidance. They generally fall into the following groups:
 
@@ -206,6 +213,16 @@ Our long-term goal is to be the GitHub + Wikipedia for grassroots farming: a par
 
 ## Who is the team that is going to deliver in this?
 
+Our team is a diverse and multidisciplinary group of innovators, each bringing unique strengths in technology, governance, and implementation.
 
+**Dominic Mills-Howell** is the team lead, a research scientist turned software engineer originally from Jamaica and now based in the UAE. With a background in full-stack development, DevOps, infrastructure, and tooling, Dominic combines strong technical breadth with deep problem-solving skills. He holds bachelor’s and master’s degrees in mathematics from the University of the West Indies and a postgraduate diploma from the International Centre for Theoretical Physics in Italy. A former researcher at CERN and current lead for the OpenEPIxUNLEASH Hackathon team, he brings both scientific rigor and practical experience in building scalable systems.
+
+**Shubham M. Singh** is an electronics and communication engineer currently working at Redicine Medsol, an Indian health-tech startup. There, he plays a key role in developing the country’s first patented IoT-based Smart Pillbox, supporting public health infrastructure through real-time medication tracking and digital health worker tools. His technical expertise is complemented by experience in operations and inventory management, ensuring end-to-end project delivery at scale.
+
+**Priyanshu Tomar** is pursuing a degree in Computer Science and Artificial Intelligence at Newton School of Technology, Rishihood University. As an emerging technologist, he brings fresh energy and up-to-date knowledge of AI, modern development practices, and product experimentation to the team.
+
+**Safita Ardhia** is a co-founder of Voices4Budget and an advocate for environmental sustainability, transparency, and inclusive governance. With expertise in civic technology and anti-corruption initiatives, she contributes a global perspective on policy engagement and user-centric digital solutions. Her participation in programs like HackCorruption has equipped her with insight into how technology can be applied ethically and equitably for societal benefit.
+
+Together, our team blends technical excellence, operational reliability, user-centered thinking, and a commitment to social impact. This combination allows us to build not just functional tools, but meaningful solutions that address real-world problems in a sustainable way.
 
 
