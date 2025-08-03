@@ -51,7 +51,93 @@ def get_started():
 
     return render_template("get_started.html", files=files, file_health=file_health, method_info=method_info)
 
-
+@app.route("/community-posts")
+def community_posts():
+    # Sample community data – replace with DB later
+    posts = [
+        {
+            "id": 1,
+            "title": "Starting Agroforestry in Kenya",
+            "author": "Amadou N.",
+            "location": "Nakuru, Kenya",
+            "image": "https://www.gcrmag.com/wp-content/uploads/2021/08/Agro-Cover.png",
+            "summary": "After years of soil degradation, I integrated trees with maize and beans. Within two years, yields improved and soil moisture increased.",
+            "story": """
+                <p>I started farming on this land in 2018. The soil was dry, and rainfall had decreased over the years. 
+                I used conventional methods, but yields dropped every season.</p>
+                <p>In 2020, I joined a local cooperative that introduced agroforestry. We planted Grevillea and Calliandra trees 
+                between crop rows. These trees fix nitrogen and provide shade and mulch.</p>
+                <p>By 2022, water retention improved, and we saw a 40% increase in maize yield. Now I raise chickens under the trees 
+                and sell timber and firewood as extra income.</p>
+                <p><strong>Tip:</strong> Start with fast-growing native trees and intercrop with legumes.</p>
+            """,
+            "date": "2024-03-12",
+            "comments": [
+                {"name": "Sarah K.", "text": "Inspiring! I'm starting a similar project in Uganda.", "date": "2024-03-13"},
+                {"name": "James L.", "text": "How do you manage tree-crop competition?", "date": "2024-03-14"}
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Urban Vertical Farming in Hanoi",
+            "author": "Minh T.",
+            "location": "Hanoi, Vietnam",
+            "image": "https://www.homegrowncoop.org/wp-content/uploads/2022/01/csm_nyc_1_newfoodcity_de__Derk_Hoberg_ee2d4468da.jpg",
+            "summary": "No land? No problem. I turned my rooftop into a hydroponic garden and now feed my family year-round.",
+            "story": """
+                <p>Living in a dense city, I had no backyard. But I had a flat rooftop. In 2021, I built my first vertical tower 
+                using PVC pipes and a small water pump.</p>
+                <p>I grow lettuce, spinach, and herbs. The system uses 90% less water than traditional farming. I use fish tank 
+                water (from my balcony aquarium) as natural fertilizer.</p>
+                <p>My neighbors loved the idea, so I started a weekend workshop. We now have 12 rooftop gardens in our building!</p>
+                <p><strong>Tip:</strong> Use recycled materials and start small. Lettuce grows fast and builds confidence.</p>
+            """,
+            "date": "2024-02-28",
+            "comments": [
+                {"name": "Linh P.", "text": "Can you share your tower design?", "date": "2024-03-01"},
+                {"name": "David R.", "text": "Do you use artificial lights?", "date": "2024-03-02"}
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Regenerative Grazing in Brazil",
+            "author": "João S.",
+            "location": "Goiás, Brazil",
+            "image": "https://civileats.com/wp-content/uploads/2022/03/220330-regenerative-grazing-mid-atlantic-carbon-sequestration-soil-health-water-drought-1-open-book-chicken-barn-credit-mary-kathryn-barnet.jpg",
+            "summary": "By rotating cattle and planting cover crops, I brought life back to degraded pastureland.",
+            "story": """
+                <p>My family's land was overgrazed for decades. The soil was compacted and eroded. Rainwater ran off instead of soaking in.</p>
+                <p>In 2019, I switched to silvopasture and rotational grazing. We planted native grasses and divided the land into 12 paddocks.</p>
+                <p>Cattle move every 3 days. This gives grass time to recover. We added 200 trees per hectare for shade and carbon capture.</p>
+                <p>Now the land supports more animals, and the water table has risen. I even see birds and frogs again!</p>
+                <p><strong>Tip:</strong> Start with one paddock. Measure grass height before and after grazing.</p>
+            """,
+            "date": "2024-01-15",
+            "comments": [
+                {"name": "Elena M.", "text": "How much did the setup cost?", "date": "2024-01-16"}
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Aquaponics in a Shipping Container",
+            "author": "Kiran P.",
+            "location": "Bangalore, India",
+            "image": "https://media.greenmatters.com/brand-img/16vDom/0x0/The-GrowUp-Box-up-at-Roof-East-1503357955079-1503357958733.jpg",
+            "summary": "I converted an old shipping container into a closed-loop farm growing fish and greens all year.",
+            "story": """
+                <p>I work in tech but love farming. In 2022, I bought a used 20ft container and insulated it.</p>
+                <p>Inside: a 500L fish tank (tilapia), three grow beds, LED lights, and an Arduino-controlled climate system.</p>
+                <p>Fish waste feeds the plants. Plants clean the water. No soil, no pesticides. I grow basil, kale, and mint.</p>
+                <p>I sell 80% of the harvest to local restaurants. The rest feeds my family. Electricity is the main cost.</p>
+                <p><strong>Tip:</strong> Monitor pH daily. Start with hardy fish like tilapia or catfish.</p>
+            """,
+            "date": "2023-11-05",
+            "comments": [
+                {"name": "Ravi D.", "text": "Can you share power consumption stats?", "date": "2023-11-06"}
+            ]
+        }
+    ]
+    return render_template("community_posts.html", posts=posts)
 
 # --- Upload logic ---
 @app.route("/upload", methods=["POST"])
