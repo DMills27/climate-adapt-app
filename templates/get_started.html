@@ -173,11 +173,36 @@
 <body>
 <div class="wrap">
     <div class="topnav"><a href="/">← Back</a></div>
-    <h1>Your project notes</h1>
+    <h1>Your Field Notes</h1>
     <p class="hint">Post multiple comments in sequence. Each entry shows when it was created.</p>
+
+
+    {% if method_info %}
+    <div style="margin-top: 40px; margin-bottom: 30px; background: #eef8f1; padding: 24px; border-radius: 10px; border: 1px solid #d5ebdc; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <h2 style="margin-top: 0; color: #2f5133;">🌱 Recommended Farming Method: {{ method_info.title }}</h2>
+        <p><strong>Description:</strong> {{ method_info.description }}</p>
+        <p><strong>How to start:</strong> {{ method_info.how_to_start }}</p>
+        {% if method_info.tools %}
+            <p><strong>Suggested tools:</strong></p>
+            <ul style="margin-top: 8px; padding-left: 20px;">
+                {% for tool in method_info.tools %}
+                    <li>{{ tool }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+
 
     <!-- Composer -->
     <textarea id="composer" placeholder="Write your next step, idea, or note here. Then click Post to append it below."></textarea>
+
+    <div style="margin-top: 15px;">
+        <label for="tagInput"><strong>Tags:</strong></label><br>
+        <input type="text" id="tagInput" placeholder="Enter tags and press Enter or comma" style="padding: 6px; width: 100%; max-width: 400px; border-radius: 4px; border: 1px solid #ccc; margin-bottom: 10px;">
+        <div id="tagContainer" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+    </div>
 
     <!-- Unified Upload Section -->
     <div class="btns">
@@ -311,6 +336,31 @@
         p.editing = false;
         render();
     }
+
+        document.addEventListener('DOMContentLoaded', function () {
+        const tagInput = document.getElementById('tagInput');
+        const tagContainer = document.getElementById('tagContainer');
+
+        tagInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tag = tagInput.value.trim().replace(/,$/, '');
+                if (tag) {
+                    const tagEl = document.createElement('span');
+                    tagEl.textContent = tag;
+                    tagEl.style.padding = "5px 10px";
+                    tagEl.style.backgroundColor = "#d5ebdc";
+                    tagEl.style.color = "#2f5133";
+                    tagEl.style.borderRadius = "12px";
+                    tagEl.style.fontSize = "14px";
+                    tagEl.style.display = "inline-block";
+                    tagEl.style.userSelect = "none";
+                    tagContainer.appendChild(tagEl);
+                    tagInput.value = '';
+                }
+            }
+        });
+    });
 
     function render() {
         thread.innerHTML = '';

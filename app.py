@@ -24,7 +24,7 @@ def index():
 def get_started():
     files = [f for f in os.listdir(UPLOAD_FOLDER)
              if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-    # Get health status for each image
+    
     file_health = {}
     for f in files:
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], f)
@@ -32,7 +32,6 @@ def get_started():
             with open(file_path, "rb") as img_file:
                 image_data = img_file.read()
                 health_response = CropHealthClient.get_binary_prediction(image_data)
-            # Parse response
             scores = parse_health_response(health_response)
             disease_risk = assess_disease_risk(scores)
             file_health[f] = disease_risk
@@ -40,7 +39,18 @@ def get_started():
             print(f"Error analyzing {f}: {e}")
             file_health[f] = {"status": "Error", "details": "Could not analyze image."}
 
-    return render_template("get_started.html", files=files, file_health=file_health)
+    # --- Add dummy or real location info here ---
+    lat, lon, area = 18.0, -76.8, 500  # example values; ideally come from user
+    try:
+        inputs = get_soil_and_weather_data(lat, lon, area)
+        method = suggest_farming_method(inputs)
+        method_info = get_method_info(method, inputs)
+    except Exception as e:
+        print(f"Failed to get method recommendation: {e}")
+        method_info = None
+
+    return render_template("get_started.html", files=files, file_health=file_health, method_info=method_info)
+
 
 
 # --- Upload logic ---
@@ -260,6 +270,61 @@ def suggest_farming_method(inputs):
         return 'Silvopasture'
     return 'Aeroponics'
 
+def get_method_info(method, inputs=None):
+    info = {
+        "title": method,
+        "description": "",
+        "how_to_start": "",
+        "tools": []
+    }
+
+    if method == "Vertical Farming":
+        info["description"] = "A space-efficient method using stacked layers to grow crops indoors under controlled conditions."
+        info["how_to_start"] = "Start with a small indoor setup using shelves, LED grow lights, and hydroponic trays. Choose fast-growing greens like lettuce or herbs."
+        info["tools"] = ["LED grow lights", "Hydroponic system", "Growing trays", "Nutrient solution", "Climate control (fan/humidifier)"]
+
+    elif method == "Greenhouses (CEA)":
+        info["description"] = "Controlled Environment Agriculture using greenhouses to regulate temperature, humidity, and light."
+        info["how_to_start"] = "Build or buy a small greenhouse. Install sensors and automated watering. Start with tomatoes or peppers."
+        info["tools"] = ["Greenhouse frame", "Polycarbonate panels", "Irrigation system", "Thermostat", "Sensors (temp/humidity)"]
+
+    elif method == "Regenerative Ag":
+        info["description"] = "A holistic approach to farming that restores soil health, increases biodiversity, and captures carbon."
+        info["how_to_start"] = "Stop tilling, introduce cover crops, rotate livestock, and avoid synthetic fertilizers. Begin with a soil test."
+        info["tools"] = ["Soil testing kit", "Cover crop seeds", "No-till drill", "Livestock (optional)", "Compost spreader"]
+
+    elif method == "Agroforestry":
+        info["description"] = "Integrating trees and shrubs into crop and livestock systems to create more diverse, productive, and sustainable land use."
+        info["how_to_start"] = "Plant tree rows between crop fields or integrate fruit trees with understory crops. Plan spacing carefully."
+        info["tools"] = ["Tree saplings", "Shovels", "Mulch", "Drip irrigation", "Pruning shears"]
+
+    elif method == "Aquaponics":
+        info["description"] = "A symbiotic system combining aquaculture (fish) and hydroponics (soilless plants). Fish waste feeds plants."
+        info["how_to_start"] = "Set up a fish tank connected to a grow bed. Cycle the system before adding fish and plants. Start with tilapia and leafy greens."
+        info["tools"] = ["Fish tank", "Grow bed", "Pump", "Biofilter", "Fish food", "pH/Ammonia test kit"]
+
+    elif method == "Dryland Farming":
+        info["description"] = "Cultivating crops without irrigation in low-rainfall areas by maximizing soil moisture retention."
+        info["how_to_start"] = "Use deep tillage, wide spacing, and drought-resistant crops like millet or sorghum. Mulch heavily."
+        info["tools"] = ["Drought-resistant seeds", "Mulch", "Chisel plow", "Soil moisture meter", "Windbreaks"]
+
+    elif method == "Silvopasture":
+        info["description"] = "Combining trees, forage, and livestock grazing in a mutually beneficial system."
+        info["how_to_start"] = "Introduce trees into pastureland. Use rotational grazing. Suitable for cattle, sheep, or goats."
+        info["tools"] = ["Tree seedlings", "Fencing (rotational)", "Water troughs", "Grazing plan", "Shelter for animals"]
+
+    elif method == "Aeroponics":
+        info["description"] = "Growing plants in air with roots misted by nutrient-rich water. Highly efficient and water-saving."
+        info["how_to_start"] = "Build or buy an aeroponic tower. Use a pump and misting nozzles. Monitor pH and nutrients daily."
+        info["tools"] = ["Aeroponic tower", "High-pressure pump", "Misting nozzles", "Nutrient solution", "pH meter", "Timer"]
+
+    else:
+        # Default fallback
+        info["description"] = "An innovative sustainable farming method suited to your land and climate."
+        info["how_to_start"] = "Consult local agricultural experts and start with a small pilot plot."
+        info["tools"] = ["Soil test kit", "Basic hand tools", "Research resources", "Local extension agent"]
+
+    return info
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
