@@ -73,7 +73,7 @@ Once again, you can access the app at **`http://localhost:5000`**.
 
 As climate change accelerates, communities around the world are seeking practical, local solutions to mitigate its effects. One promising approach is the use of sustainable farming, which refers to using agricultural methods that meet today’s food needs without compromising the ability of future generations to do the same.
 
-An example of sustainable farming is a technique like polyculture planting, where growing complementary crops such as corn, beans, and squash together, enhance biodiversity, soil health, and resilience. Yet while the theory is simple, the implementation is not. Transitioning to sustainable farming is complex, requiring localised knowledge (that are sensitive to the needs ofxw local traditions), access to specific materials, and adaptation to unpredictable constraints.
+An example of sustainable farming is a technique like polyculture planting, where growing complementary crops such as corn, beans, and squash together, enhance biodiversity, soil health, and resilience. Yet while the theory is simple, the implementation is not. Transitioning to sustainable farming is complex, requiring localised knowledge (that are sensitive to the needs of local traditions), access to specific materials, and adaptation to unpredictable constraints.
 
 A major challenge is the lack of a supportive, accessible platform where individuals can log their progress, share successes, ask questions, and learn from others in similar conditions. For example, someone in one region might easily acquire a material like PVC piping for a hydroponics project, while someone elsewhere must improvise with limited resources, and may not even know what alternatives suitable exist or can be used. This is the main problem we're solving: tackling the lack of an centralised means for developing and sharing accessible, locally-adapted sustainable farming solutions. 
 
@@ -158,12 +158,12 @@ If either soil or weather data is unavailable, the algorithm falls back to using
 
 ## Further refinements/Future implementations
 
-Going forward, we would like to refine certain aspects of the current implementation of the application. They are as follows:
+As we continue development, we intend to refine several elements of the existing application. Below are some of the areas identified for improvement (this list is not exhaustive):
 
-* Creating a more robust algorithm for determining the best suited sustainable farming method. The current heuristics used are broad and lack the appropriate level of rigour to adequately determine the best soil type for the widest possible ranges of possible scenarios. Some ways to better refine would be to reify the methods from this [paper]().
-* Increase the range of crops and their associated diesease with pattern matching and machine learning models. The current crop health API is limited by a number of crops, namely, 
-* 
- 
+* Creating a more robust algorithm for determining the best suited sustainable farming method for a given set of constraints. The current heuristics used are broad and lack the appropriate level of rigour and precision to adequately determine the whether the conditions correspond to the most suitable sustainable farming method for the widest possible ranges of possible scenarios. Some ways to better refine would be to reify the methods from this [paper](https://www.atmosp.physics.utoronto.ca/people/lev/ESSgc2/farmEIAeval.pdf), such as environmental risk mappings, life cycle analysis and multi-agent systems, to name a few. These can be used either individually or a combination of the methods depending on our specific objective(s).
+* Increase the range of crops and their associated diesease that can be verified and diagnised with the Crop Health API with pattern matching and machine learning models. The current crop health API is limited by a number of crops, for instance, the multi-HLT prediction only has predictions for five types of crops namely: cassava, maize, beans, bananas and cocoa. As the number of users on this platform increases, it opens up the possiblity for labeling and diagnosing the crop health for a much larger variety of crops.
+* Enhancing the user interface (UI) to be more intuitive and user-centric. While the current UI is functional, certain elements may come across as generic or lacking in distinctive identity. Our goal is to redesign key interface components to improve usability, reduce cognitive load, and provide a more engaging and memorable user experience. This includes re-evaluating layout hierarchies, visual feedback mechanisms, and interaction flows based on user behavior and feedback.
+
 
 ## Who are your users and what is their impact?
 Our users are individuals and communities who are motivated to implement sustainable farming practices, but face barriers due to limited resources, local constraints, or lack of tailored guidance. They generally fall into the following groups:
