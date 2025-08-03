@@ -48,19 +48,6 @@ A major challenge is the lack of a supportive, accessible platform where individ
 A platform that empowers users to plan, document, troubleshoot, and share their  sustainable farming efforts. It serves as both a guide and a community which highlights successful case studies, providing context-sensitive advice, and helping users navigate setbacks, especially when working under constrained conditions.
 
 We propose a web application, written in [Flask](https://flask.palletsprojects.com/en/stable/), that determines the most suitable sustainable farming method for a user to use, from inputting their location data and available land area for farming. It works in the following three step process:
-
-1. Some item
-2. Item with table
-
-  | xx|yyy|
-  |---|---|
-  |aa|bb|
-  * Nested item with table
-
-     | xx|yyy|
-     |---|---|
-     |aa|bb|
-3. Another item.
    
 * Step 1: 
     * The upper half of the home screen presents a global map with clickable components. The bottom half of the screen from the left-hand side has a text box where the user enters the country that they are planning on undertaking the sustainable farming activity for then the amount of available area of land they have available for farming on the right
@@ -68,16 +55,16 @@ We propose a web application, written in [Flask](https://flask.palletsprojects.c
         1) If one or more users has already implemented a project with similar constraints, it notifies the user of that by drawing an animated dashed line or lines to their location where that user implemented that solution and then a pop-up over their location appears prompting the user to view it; 
         2) The recommended sustainable farming method appears under the button and under that is a clickable hyperlink with text that says "Let's get you started". Clicking that will take you to the page where you'll document your progress detailed further in the section below.
         * **Note**: The algorithm recommends a sustainable farming method by using the user's location to retrieve soil type and weather data via OpenEPI's [Soil API](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#soil) and  [Weather API](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#weather). It converts the given coordinates and land area into a bounding box, then queries the APIs to get the dominant soil type and current weather (e.g., temperature, rainfall). These inputs, along with land size, are evaluated using simple heuristics to determine the best method, such as Aquaponics, Agroforestry, or Vertical Farming, as shown in the table below. If soil or weather data is missing, the algorithm defaults to using land area alone.
-        * | Method            | Climate Benefit                          |
-    | ----------------- | ---------------------------------------- |
-    | Aeroponics        | Minimal water use                        |
-    | Agroforestry      | Carbon capture, soil and water retention |
-    | Regenerative Agriculture   | Soil health, carbon sequestration        |
-    | Aquaponics        | Closed-loop sustainability               |
-    | Vertical Farming  | Urban, low-land use, weather-proof       |
-    | Dryland Farming   | Thrives in arid conditions               |
-    | Silvopasture      | Climate-smart livestock integration      |
-    | Greenhouses  | Control over climate variables           |
+            | Method            | Climate Benefit                          |
+            | ----------------- | ---------------------------------------- |
+            | Aeroponics        | Minimal water use                        |
+            | Agroforestry      | Carbon capture, soil and water retention |
+            | Regenerative Agriculture   | Soil health, carbon sequestration        |
+            | Aquaponics        | Closed-loop sustainability               |
+            | Vertical Farming  | Urban, low-land use, weather-proof       |
+            | Dryland Farming   | Thrives in arid conditions               |
+            | Silvopasture      | Climate-smart livestock integration      |
+            | Greenhouses  | Control over climate variables           |
 
 * Step 2: 
     * After clicking the "Let's get you started" link, you enter the "field notes" section of the application. The top of the page contains a preamble about how to get started with the farming method that was recommended, and the type of materials that would be available to needed to actualise this project. Under that is a text box where one can create posts about the varous progress of your project in different time intervals. In addition to creating posts one can upload images of the crops and get feedback on the health of the crops at various stages which uses the OpenEPI [Crop Health](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#crop-health) API under the hood.
