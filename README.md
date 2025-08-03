@@ -10,7 +10,7 @@ Here’s a clearer, better organized, and typo-free version of your setup and in
 
 ---
 
-# Installation Instructions
+# Installation Steps
 
 This web application is built with Flask. You can run it using either **Nix** (recommended) or a standard Python environment.
 
@@ -23,7 +23,7 @@ The simplest and cleanest way to run the app is using [Nix](https://nixos.org/do
 ### Steps:
 
 1. **Install Nix** (if not already installed):
-   👉 [nixos.org/download](https://nixos.org/download/#nix-install-linux)
+    [nixos.org/download](https://nixos.org/download/#nix-install-linux)
 
 2. **Clone this repository** and open a terminal in the project directory.
 
