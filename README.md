@@ -73,7 +73,7 @@ Once again, you can access the app at **`http://localhost:5000`**.
 
 As climate change accelerates, communities around the world are seeking practical, local solutions to mitigate its effects. One promising approach is the use of sustainable farming, which refers to using agricultural methods that meet today’s food needs without compromising the ability of future generations to do the same.
 
-An example of sustainable farming is a technique like polyculture planting, such as growing complementary crops such as corn, beans, and squash together, enhance biodiversity, soil health, and resilience. Yet while the theory is simple, implementation is not. Transitioning to sustainable farming is complex, requiring localised knowledge (that respect local traditions especially), access to specific materials, and adaptation to unpredictable constraints.
+An example of sustainable farming is a technique like polyculture planting, where growing complementary crops such as corn, beans, and squash together, enhance biodiversity, soil health, and resilience. Yet while the theory is simple, the implementation is not. Transitioning to sustainable farming is complex, requiring localised knowledge (that are sensitive to the needs ofxw local traditions), access to specific materials, and adaptation to unpredictable constraints.
 
 A major challenge is the lack of a supportive, accessible platform where individuals can log their progress, share successes, ask questions, and learn from others in similar conditions. For example, someone in one region might easily acquire a material like PVC piping for a hydroponics project, while someone elsewhere must improvise with limited resources, and may not even know what alternatives suitable exist or can be used. This is the main problem we're solving: tackling the lack of an centralised means for developing and sharing accessible, locally-adapted sustainable farming solutions. 
 
@@ -118,6 +118,8 @@ Once both fields are filled out, the user clicks the **“Recommend Farming Meth
 
 These inputs along with the land size are passed into a rules-based algorithm that suggests the most appropriate farming method as shown in the table below.
 
+<center>
+
 | Method            | Climate Benefit                          |
 | ----------------- | ---------------------------------------- |
 | Aeroponics        | Minimal water use                        |
@@ -129,21 +131,23 @@ These inputs along with the land size are passed into a rules-based algorithm th
 | Silvopasture      | Climate-smart livestock integration      |
 | Greenhouses  | Control over climate variables           |
 
+</center>
+
 If either soil or weather data is unavailable, the algorithm falls back to using land area alone to provide a best-effort recommendation.
 
-* **Step 2**: Create and Track Your Project (Field Notes)
+### **Step 2: Create and Track Your Project (Field Notes)**
 
-   * After clicking “Let’s get you started,” users are taken to the Field Notes section—where they begin documenting their sustainable farming journey.
+   * After clicking “Let’s get you started,” users are taken to the Field Notes section, where they can begin documenting their sustainable farming journey.
 
     * At the top of the page is a brief getting started guide tailored to the recommended farming method. This guide outlines basic steps, materials needed (adapted to local constraints), and links to relevant resources.
 
-    * Below that is a text box where users can log updates about their project at different stages—for example, planning, setup, planting, troubleshooting, or harvesting.
+    * Below that is a text box where users can log updates about their project at different stages, for example, planning, setup, planting, troubleshooting, or harvesting.
 
     * Users can also upload images of their crops and receive feedback on crop health using OpenEPI’s [Crop Health](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#crop-health) API, which provides automated assessments based on visual indicators.
 
     * Each post can be tagged with the type of crops being grown and any specific local or traditional farming methods used. This improves discoverability and makes it easier for others to learn from contextually similar projects.
 
-* **Step 3**: Join the Community (Community Notes)
+### **Step 3: Join the Community (Community Notes)**
 
     * Once a user creates their first post, it becomes visible in the Community Notes section:
         * Other users can comment, ask questions, or offer suggestions—fostering collaboration and collective problem-solving.
@@ -170,7 +174,7 @@ Our users are individuals and communities who are motivated to implement sustain
    Organizations working in areas affected by food insecurity or climate vulnerability need adaptable, replicable methods for growing food locally. The ability to learn from case studies in similar regions and document their own implementations makes our platform valuable for both field operations and long-term planning.
 
 5. **Tinkerers, DIYers, and open-source advocates**
-   Some users are drawn not just to farming but to the engineering and community problem-solving aspects—those interested in hacking together hydroponics systems or designing resource-efficient greenhouses with locally available materials. These users contribute to the knowledge base and help others adapt solutions to their context.
+   Some users are drawn not just to farming but to the engineering and community problem-solving aspects, like those interested in hacking together hydroponics systems or designing resource-efficient greenhouses with locally available materials (including some of our group members). These users contribute to the knowledge base and help others adapt solutions to their context.
 
 ## What is your business plan?
 
@@ -191,7 +195,6 @@ We’ll also:
 Our platform is free to use for individuals. Revenue and sustainability will be achieved through:
 
 * **Institutional Licensing**: Organizations (e.g., development agencies, universities, local governments) can license private versions of the platform with analytics dashboards, training materials, and integration with their internal systems.
-* **Donor and Grant Funding**: We will actively seek funding through climate resilience, food security, and open knowledge grants—such as those offered by FAO, the Green Climate Fund, and Mozilla.
 * **Marketplace (Future Phase)**: In the long term, we may host a vetted, peer-rated marketplace of materials, kits, and services (e.g., seed exchanges, recycled irrigation systems, tool libraries) where local vendors can connect with growers.
 * **Premium Support or Custom Deployments**: For organizations seeking tailored deployments (e.g., in refugee camps, remote villages), we will offer consulting and technical services.
 
@@ -200,9 +203,6 @@ Our platform is free to use for individuals. Revenue and sustainability will be 
 User-contributed data (e.g., crop growth patterns, material availability, local adaptation strategies) becomes part of a growing, open-access repository. Over time, this will form a living library of context-specific sustainable farming practices, helping drive research, policy, and localized development.
 
 Our long-term goal is to be the GitHub + Wikipedia for grassroots farming: a participatory platform where anyone, anywhere, can learn, contribute, and adapt sustainable practices that work in their real-world context.
-
----
-
 
 ## Who is the team that is going to deliver in this?
 
