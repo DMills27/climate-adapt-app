@@ -6,31 +6,75 @@
 - Safita Ardhia 
 - Priyanshu
 
-# Installation Steps
+Here’s a clearer, better organized, and typo-free version of your setup and installation instructions. It improves readability, corrects grammar, and separates concepts logically.
 
-## Builiding and Running the Flask App with Nix 
-The most straightforward way to build and run this application is by installing [Nix](https://nixos.org/download/#nix-install-linux) and cloning this repository then running the following commands inside a terminal within this repo
+---
 
-```
-nix-shell
-flask run
-```
+# Installation Instructions
 
-Nothing more is needed and you can view the app running at `localhost:5000`. Under the hood, Nix is a creating an ephemeral shell that that downloads and configures the environment defined in the `default.nix` file of this reposistory. All of these actions take place on disk so it provides a convinenet way of creating an isolated environmenet that doesn't interact/pollute your global system. 
+This web application is built with Flask. You can run it using either **Nix** (recommended) or a standard Python environment.
 
-## Builiding and Running the Flask App without Nix 
-Enter the following commands to get the application up and running if you choose to not use.
+---
 
-```
-export FLASK_APP=app.py  
-export FLASK_ENV=development
+## Option 1: Build and Run with Nix (Recommended)
 
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-flask run
-```
+The simplest and cleanest way to run the app is using [Nix](https://nixos.org/download/#nix-install-linux), which sets up a fully isolated environment based on the configuration in this repo.
+
+### Steps:
+
+1. **Install Nix** (if not already installed):
+   👉 [nixos.org/download](https://nixos.org/download/#nix-install-linux)
+
+2. **Clone this repository** and open a terminal in the project directory.
+
+3. **Start the app** by running:
+
+   ```bash
+   nix-shell
+   flask run
+   ```
+
+The app will be available at **`http://localhost:5000`**.
+
+> Behind the scenes, `nix-shell` creates a **temporary shell environment** using the `default.nix` file. This ensures all dependencies are installed without modifying your global system, making it ideal for reproducible development.
+
+---
+
+## Option 2: Build and Run Without Nix (Using Python Virtual Environment)
+
+If you'd rather run the app using a traditional Python setup, follow these steps:
+
+### Steps:
+
+1. **Set the Flask environment variables**:
+
+   ```bash
+   export FLASK_APP=app.py  
+   export FLASK_ENV=development
+   ```
+
+2. **Create and activate a virtual environment**:
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies**:
+
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. **Run the app**:
+
+   ```bash
+   flask run
+   ```
+
+Once again, you can access the app at **`http://localhost:5000`**.
+
 
 # Written Product Description
 ## What problem are you solving?
@@ -67,7 +111,7 @@ Once both fields are filled out, the user clicks the **“Recommend Farming Meth
    * Draws **animated dashed lines** on the map pointing to their locations.
    * Displays a **pop-up over each relevant project site**, prompting the user to explore how others solved similar challenges.
 
-2. **Personalized Farming Method Recommendation**
+2. **Personalised Farming Method Recommendation**
    Below the button, the system displays:
 
    * A recommended sustainable farming method (e.g., **Aquaponics**, **Agroforestry**, or **Vertical Farming**).
