@@ -48,6 +48,19 @@ A major challenge is the lack of a supportive, accessible platform where individ
 A platform that empowers users to plan, document, troubleshoot, and share their  sustainable farming efforts. It serves as both a guide and a community which highlights successful case studies, providing context-sensitive advice, and helping users navigate setbacks, especially when working under constrained conditions.
 
 We propose a web application, written in [Flask](https://flask.palletsprojects.com/en/stable/), that determines the most suitable sustainable farming method for a user to use, from inputting their location data and available land area for farming. It works in the following three step process:
+
+1. Some item
+2. Item with table
+
+  | xx|yyy|
+  |---|---|
+  |aa|bb|
+  * Nested item with table
+
+     | xx|yyy|
+     |---|---|
+     |aa|bb|
+3. Another item.
    
 * Step 1: 
     * The upper half of the home screen presents a global map with clickable components. The bottom half of the screen from the left-hand side has a text box where the user enters the country that they are planning on undertaking the sustainable farming activity for then the amount of available area of land they have available for farming on the right
