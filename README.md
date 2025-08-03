@@ -118,7 +118,7 @@ Once both fields are filled out, the user clicks the **“Recommend Farming Meth
 
 These inputs along with the land size are passed into a rules-based algorithm that suggests the most appropriate farming method as shown in the table below.
 
-<center>
+<div align="center">
 
 | Method            | Climate Benefit                          |
 | ----------------- | ---------------------------------------- |
@@ -131,28 +131,28 @@ These inputs along with the land size are passed into a rules-based algorithm th
 | Silvopasture      | Climate-smart livestock integration      |
 | Greenhouses  | Control over climate variables           |
 
-</center>
+</div>
 
 If either soil or weather data is unavailable, the algorithm falls back to using land area alone to provide a best-effort recommendation.
 
 ### **Step 2: Create and Track Your Project (Field Notes)**
 
-   * After clicking “Let’s get you started,” users are taken to the Field Notes section, where they can begin documenting their sustainable farming journey.
+* After clicking “Let’s get you started,” users are taken to the Field Notes section, where they can begin documenting their sustainable farming journey.
 
-    * At the top of the page is a brief getting started guide tailored to the recommended farming method. This guide outlines basic steps, materials needed (adapted to local constraints), and links to relevant resources.
+* At the top of the page is a brief getting started guide tailored to the recommended farming method. This guide outlines basic steps, materials needed (adapted to local constraints), and links to relevant resources.
 
-    * Below that is a text box where users can log updates about their project at different stages, for example, planning, setup, planting, troubleshooting, or harvesting.
+* Below that is a text box where users can log updates about their project at different stages, for example, planning, setup, planting, troubleshooting, or harvesting.
 
-    * Users can also upload images of their crops and receive feedback on crop health using OpenEPI’s [Crop Health](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#crop-health) API, which provides automated assessments based on visual indicators.
+* Users can also upload images of their crops and receive feedback on crop health using OpenEPI’s [Crop Health](https://github.com/openearthplatforminitiative/openepi-client-py?tab=readme-ov-file#crop-health) API, which provides automated assessments based on visual indicators.
 
-    * Each post can be tagged with the type of crops being grown and any specific local or traditional farming methods used. This improves discoverability and makes it easier for others to learn from contextually similar projects.
+* Each post can be tagged with the type of crops being grown and any specific local or traditional farming methods used. This improves discoverability and makes it easier for others to learn from contextually similar projects.
 
 ### **Step 3: Join the Community (Community Notes)**
 
-    * Once a user creates their first post, it becomes visible in the Community Notes section:
-        * Other users can comment, ask questions, or offer suggestions—fostering collaboration and collective problem-solving.
-        * The tagging system enables users to search for similar projects based on crop type, location, method, or materials used.
-        * This creates a living network of shared experiences—making it easier to replicate or adapt successful sustainable farming efforts across diverse regions and conditions.
+* Once a user creates their first post, it becomes visible in the Community Notes section:
+    * Other users can comment, ask questions, or offer suggestions—fostering collaboration and collective problem-solving.
+    * The tagging system enables users to search for similar projects based on crop type, location, method, or materials used.
+    * This creates a living network of shared experiences—making it easier to replicate or adapt successful sustainable farming efforts across diverse regions and conditions.
 
 
 
